@@ -75,7 +75,7 @@ function uploadPackage() {
 
 # BUILD PACKAGE TO AEM
 function buildPackage() {
-  # Check Param
+  # CHECK PARAM
   if [ $# != 3 ]; then
     echo "[ERR]buildPackage Param Error:" $*
     exit 1
@@ -83,6 +83,12 @@ function buildPackage() {
   user=$1
   password=$2
   ip=$3
+  # CHECK upload/success.log
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" ]; then
+    echo "[ERR]All uploads failed !"
+    exit 1
+  fi
+  # LOOP upload/success.log
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/upload/success.log); do
     zipName="$(echo $line | awk -F '.' '{print $1}')-$PACKAGE_VERSION.$(echo $line | awk -F '.' '{print $2}')"
     packagePass="/etc/packages/$GROUP_NAME/$zipName"
@@ -118,11 +124,17 @@ function downloadPackage() {
   user=$1
   password=$2
   ip=$3
+  # CHECK build/success.log
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log" ]; then
+    echo "[ERR]All builds failed !"
+    exit 1
+  fi
   # CHECK DOWNLOAD LOG FOLDER
   if [ ! -d "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/" ]; then
     mkdir -p "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/"
   fi
   echo -e "\n[*]READY TO DOWNLOAD ... \n"
+  # LOOP upload/success.log
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
     echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
