@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readonly XML_URL=http://127.0.0.1/res.xml
+readonly XML_URL=http://54.92.43.67:7771/res.xml
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly FILTER_FILE=filter.xml
@@ -11,21 +11,17 @@ readonly AEM_DOWNLOAD_FOLDER=download
 readonly GROUP_NAME=shell_upload
 readonly PACKAGE_VERSION=1.0
 
+# AEM6.3環境
+readonly USER63="admin"          # ユーザ名
+readonly PASSWORD63="adminadmin" # パスワード
+readonly IP63="54.92.43.67"        # IPアドレス
+readonly PORT63=7769             # PORT
+
 # SCRIPT STORAGE DIRECTORY
 BASE_PATH=$(
   cd $(dirname $0)
   pwd
 )
-
-# AEM6.3環境
-readonly USER63="admin"          # ユーザ名
-readonly PASSWORD63="adminadmin" # パスワード
-readonly IP63="localhost"        # IPアドレス
-
-# AEM6.5環境
-#readonly USER65="admin"
-#readonly PASSWORD65="admin"
-#readonly IP65="54.168.219.196"
 
 # UPLOAD PACKAGE TO AEM
 function uploadPackage() {
@@ -38,7 +34,7 @@ function uploadPackage() {
   password=$2
   ip=$3
   packagePass=$4
-  UPLOAD_RES=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:4502/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
+  UPLOAD_RES=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:$PORT63/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
   IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
   ZIP_FILE_NAME=$(echo $packagePass | awk -F '/' '{print $NF}')
   # CHECK UPLOAD LOG FOLDER
@@ -72,7 +68,7 @@ function buildPackage() {
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/upload/success.log); do
     zipName="$(echo $line | awk -F '.' '{print $1}')-$PACKAGE_VERSION.$(echo $line | awk -F '.' '{print $2}')"
     packagePass="/etc/packages/$GROUP_NAME/$zipName"
-    BUILD_RES=$(curl -sSi -u ${user}:${password} -X POST http://${ip}:4502/crx/packmgr/service/.json${packagePass}?cmd=build | awk -F 'success' '/msg/{print $0}')
+    BUILD_RES=$(curl -sSi -u ${user}:${password} -X POST http://${ip}:$PORT63/crx/packmgr/service/.json${packagePass}?cmd=build | awk -F 'success' '/msg/{print $0}')
     IS_SUCCESS=$(echo $BUILD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
     # CHECK BUILD LOG FOLDER
     if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/build/" ]; then
@@ -111,7 +107,7 @@ function downloadPackage() {
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
     echo "*******************************************************"
     echo "[*] Start Download: [$line] "
-    curl -u ${user}:${password} http://${ip}:4502/$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
+    curl -u ${user}:${password} http://${ip}:$PORT63/$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
     echo "[*] Download Success: [$line] "
     echo "*******************************************************"
   done
