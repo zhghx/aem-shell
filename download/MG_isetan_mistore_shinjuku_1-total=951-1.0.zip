@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html>
+    <head><title>404 Not Found</title></head>
+    <body>
+        <h1>Not Found</h1>
+        <p>Cannot serve request to //etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip in org.apache.sling.servlets.get.DefaultGetServlet</p>
+        
+        <h3>Request Progress:</h3>
+<pre>
+      0 TIMER_START{Request Processing}
+      1 COMMENT timer_end format is {&lt;elapsed microseconds&gt;,&lt;timer name&gt;} &lt;optional message&gt;
+      3 LOG Method=GET, PathInfo=null
+      4 TIMER_START{handleSecurity}
+    901 TIMER_END{895,handleSecurity} authenticator org.apache.sling.auth.core.impl.SlingAuthenticator@3f72d8e6 returns true
+    997 TIMER_START{ResourceResolution}
+   1119 TIMER_END{122,ResourceResolution} URI=//etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip resolves to Resource=JcrNodeResource, type=nt:file, superType=null, path=/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip
+   1123 LOG Resource Path Info: SlingRequestPathInfo: path=&apos;/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip&apos;, selectorString=&apos;null&apos;, extension=&apos;p&apos;, suffix=&apos;null&apos;
+   1123 TIMER_START{ServletResolution}
+   1125 TIMER_START{resolveServlet(/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip)}
+   1134 TIMER_END{9,resolveServlet(/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip)} Using servlet org.apache.sling.servlets.get.DefaultGetServlet
+   1135 TIMER_END{11,ServletResolution} URI=//etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip handled by Servlet=org.apache.sling.servlets.get.DefaultGetServlet
+   1136 LOG Applying Requestfilters
+   1138 LOG Calling filter: com.adobe.granite.resourceresolverhelper.impl.ResourceResolverHelperImpl
+   1141 LOG Calling filter: org.apache.sling.security.impl.ContentDispositionFilter
+   1143 LOG Calling filter: org.apache.sling.i18n.impl.I18NFilter
+   1144 LOG Calling filter: com.adobe.granite.httpcache.impl.InnerCacheFilter
+   1147 LOG Calling filter: org.apache.sling.rewriter.impl.RewriterFilter
+   1148 LOG Calling filter: com.adobe.cq.mcm.campaign.servlets.CampaignCopyTracker
+   1149 LOG Calling filter: com.adobe.cq.history.impl.HistoryRequestFilter
+   1241 LOG Calling filter: com.day.cq.wcm.core.impl.WCMRequestFilter
+   1246 LOG Calling filter: com.adobe.cq.wcm.core.components.internal.servlets.CoreFormHandlingServlet
+   1248 LOG Calling filter: com.adobe.granite.optout.impl.OptOutFilter
+   1250 LOG Calling filter: com.day.cq.wcm.foundation.forms.impl.FormsHandlingServlet
+   1251 LOG Calling filter: com.adobe.cq.social.commons.cors.CORSAuthenticationFilter
+   1253 LOG Calling filter: org.apache.sling.engine.impl.debug.RequestProgressTrackerLogFilter
+   1254 LOG Calling filter: com.day.cq.wcm.mobile.core.impl.redirect.RedirectFilter
+   1255 LOG Calling filter: com.day.cq.wcm.core.impl.AuthoringUIModeServiceImpl
+   1395 LOG Calling filter: com.adobe.granite.csrf.impl.CSRFFilter
+   1397 LOG Calling filter: com.adobe.granite.rest.assets.impl.AssetContentDispositionFilter
+   1399 LOG Calling filter: com.adobe.granite.requests.logging.impl.RequestLoggerImpl
+   1401 LOG Calling filter: com.adobe.granite.rest.impl.servlet.ApiResourceFilter
+   1413 LOG Calling filter: com.day.cq.dam.core.impl.assetlinkshare.AdhocAssetShareAuthHandler
+   1415 LOG Calling filter: com.day.cq.dam.core.impl.servlet.ActivityRecordHandler
+   1419 LOG Calling filter: com.adobe.cq.social.ugcbase.security.impl.SaferSlingPostServlet
+   1420 LOG Calling filter: com.day.cq.wcm.core.impl.warp.TimeWarpFilter
+   1423 LOG Applying Componentfilters
+   1424 LOG Calling filter: com.day.cq.personalization.impl.TargetComponentFilter
+   1425 LOG Calling filter: com.day.cq.wcm.core.impl.page.PageLockFilter
+   1427 LOG Calling filter: com.day.cq.wcm.core.impl.WCMComponentFilter
+   1474 LOG Calling filter: com.day.cq.wcm.core.impl.WCMDebugFilter
+   1478 TIMER_START{org.apache.sling.servlets.get.DefaultGetServlet#0}
+   1483 LOG No renderer for extension p
+   1490 LOG Applying Error filters
+   1491 LOG Calling filter: org.apache.sling.i18n.impl.I18NFilter
+   1491 LOG Calling filter: org.apache.sling.rewriter.impl.RewriterFilter
+   1494 TIMER_START{handleError:status=404}
+   1502 TIMER_END{7,handleError:status=404} Using handler /libs/sling/servlet/errorhandler/404.jsp
+   1776 LOG Found processor for post processing ProcessorConfiguration: {contentTypes=[text/html], order=-1, active=true, valid=true, processErrorResponse=true, pipeline=(generator=Config(type=htmlparser, config={}), transformers=(Config(type=linkchecker, config={}), Config(type=mobile, config=JcrPropertyMap [node=Node[NodeDelegate{tree=/libs/cq/config/rewriter/default/transformer-mobile: { jcr:primaryType = nt:unstructured, component-optional = true}}], values={jcr:primaryType=nt:unstructured, component-optional=true}]), Config(type=mobiledebug, config=JcrPropertyMap [node=Node[NodeDelegate{tree=/libs/cq/config/rewriter/default/transformer-mobiledebug: { jcr:primaryType = nt:unstructured, component-optional = true}}], values={jcr:primaryType=nt:unstructured, component-optional=true}]), Config(type=contentsync, config=JcrPropertyMap [node=Node[NodeDelegate{tree=/libs/cq/config/rewriter/default/transformer-contentsync: { jcr:primaryType = nt:unstructured, component-optional = true}}], values={jcr:primaryType=nt:unstructured, component-optional=true}]), serializer=Config(type=htmlwriter, config={}))}
+   1835 TIMER_END{1834,Request Processing} Dumping SlingRequestProgressTracker Entries
+</pre>
+
+        
+        <hr>
+        <address>ApacheSling/2.6 (jetty/9.4.15.v20190215, OpenJDK 64-Bit Server VM 11.0.11, Mac OS X 11.2.3 aarch64)</address>
+    </body>
+</html>
