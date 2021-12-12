@@ -28,7 +28,7 @@ BASE_PATH=$(
 
 # UPLOAD PACKAGE TO AEM
 function uploadPackage() {
-  # 引数の個数チェック
+  # Check Param
   if [ $# != 4 ]; then
     echo "uploadPackage 引数エラー:" $*
     exit 1
@@ -61,7 +61,7 @@ function uploadPackage() {
 
 # BUILD PACKAGE TO AEM
 function buildPackage() {
-  # 引数の個数チェック
+  # Check Param
   if [ $# != 3 ]; then
     echo "buildPackage 引数エラー:" $*
     exit 1
