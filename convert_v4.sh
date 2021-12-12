@@ -110,11 +110,14 @@ function downloadPackage() {
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
     echo "*******************************************************"
-    echo "[*] Start Download : [$line] "
+    echo "[*] Start Download: [$line] "
     curl -u ${user}:${password} http://${ip}:4502/$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
-    echo "[*] Download Success : [$line] "
+    echo "[*] Download Success: [$line] "
     echo "*******************************************************"
   done
+  echo ">>>>>>>>>>>>>>>>>>>>>>>>>"
+  echo "[*]All downloads complete"
+  echo "<<<<<<<<<<<<<<<<<<<<<<<<<"
 }
 
 #######################################
