@@ -14,9 +14,9 @@ readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly FILTER_FILE=filter.xml
 readonly PROPERTIES_FILE=properties.xml
-readonly AEM_ZIP_FOLDER=filter_zip
+readonly AEM_ZIP_FOLDER=pre_build_zip
 readonly AEM_LOG_FOLDER=logs
-readonly AEM_DOWNLOAD_FOLDER=download
+readonly AEM_DOWNLOAD_FOLDER=download_build_done_zip
 readonly GROUP_NAME=shell_upload
 readonly PACKAGE_VERSION=1.0
 
