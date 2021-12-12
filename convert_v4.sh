@@ -152,7 +152,7 @@ for ((i = 1; 1; i++)); do
 
   ITEM_RESULT=$(cat $BASE_PATH/$TEMP_FILE_ITEM)
   if [[ $ITEM_RESULT == "" ]]; then
-    echo "[*]ITEM READ END ..."
+    echo -e "[*]ITEM READ END ...\n"
     break
   fi
 
@@ -168,7 +168,7 @@ for ((i = 1; 1; i++)); do
     FILTER_ROOT=$(xmllint --xpath "//item/description/filter[$j]/@root" $BASE_PATH/$TEMP_FILE_ITEM)
     FILTER_ROOT=$(echo "$FILTER_ROOT" | sed s/[[:space:]]//g)
     if [[ $FILTER_ROOT == "" ]]; then
-      echo "[*]FILTER READ END ..."
+      echo -e "[*]FILTER READ END ...\n"
       break
     fi
     ITEM_FILTER_LIST=("${ITEM_FILTER_LIST[@]}" $FILTER_ROOT)
