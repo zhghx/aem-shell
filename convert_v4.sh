@@ -14,7 +14,7 @@ readonly PACKAGE_VERSION=1.0
 # AEM6.3環境
 readonly USER63="admin"          # ユーザ名
 readonly PASSWORD63="adminadmin" # パスワード
-readonly IP63="54.92.43.67"        # IPアドレス
+readonly IP63="54.92.43.67"      # IPアドレス
 readonly PORT63=7769             # PORT
 
 # SCRIPT STORAGE DIRECTORY
@@ -91,9 +91,9 @@ function buildPackage() {
 }
 
 function downloadPackage() {
-  # 引数の個数チェック
+  # Check Param
   if [ $# != 3 ]; then
-    echo "downloadPackage 引数エラー:" $*
+    echo "downloadPackage Param Error !" $*
     exit 1
   fi
   user=$1
@@ -103,17 +103,17 @@ function downloadPackage() {
   if [ ! -d "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/" ]; then
     mkdir -p "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/"
   fi
+  echo -e "\nStart Download ... \n"
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
-    echo "*******************************************************"
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "[*] Start Download: [$line] "
     curl -u ${user}:${password} http://${ip}:$PORT63/$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
-    echo "[*] Download Success: [$line] "
-    echo "*******************************************************"
+    echo -e "[*] Download Success !\n"
   done
-  echo ">>>>>>>>>>>>>>>>>>>>>>>>>"
-  echo "[*]All downloads complete"
-  echo "<<<<<<<<<<<<<<<<<<<<<<<<<"
+  echo "******************************"
+  echo "*** All downloads complete ***"
+  echo "******************************"
 }
 
 #######################################
