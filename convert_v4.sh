@@ -1,6 +1,15 @@
 #!/bin/bash
 
+# xml data sources
 readonly XML_URL=http://54.92.43.67:7771/res.xml
+
+# aem server info for (upload, build, download)
+readonly USER63="admin"
+readonly PASSWORD63="adminadmin"
+readonly IP63="54.92.43.67"
+readonly PORT63=7769
+
+# SYSTEM CONFIG
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly FILTER_FILE=filter.xml
@@ -10,12 +19,6 @@ readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download
 readonly GROUP_NAME=shell_upload
 readonly PACKAGE_VERSION=1.0
-
-# AEM6.3環境
-readonly USER63="admin"          # ユーザ名
-readonly PASSWORD63="adminadmin" # パスワード
-readonly IP63="54.92.43.67"      # IPアドレス
-readonly PORT63=7769             # PORT
 
 # SCRIPT STORAGE DIRECTORY
 BASE_PATH=$(
@@ -56,6 +59,7 @@ function uploadPackage() {
   fi
 }
 
+# BUILD PACKAGE TO AEM
 function buildPackage() {
   # 引数の個数チェック
   if [ $# != 3 ]; then
@@ -90,6 +94,7 @@ function buildPackage() {
   done
 }
 
+# DOWNLOAD AEM PACKAGE
 function downloadPackage() {
   # Check Param
   if [ $# != 3 ]; then
