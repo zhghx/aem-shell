@@ -26,11 +26,25 @@ BASE_PATH=$(
   pwd
 )
 
+# CHECK COMMAND
+if [ ! -x "$(command -v curl)" ]; then
+  echo 'Error: curl is not installed.' >&2
+  exit 1
+fi
+if [ ! -x "$(command -v zip)" ]; then
+  echo 'Error: xmllint is not installed.' >&2
+  exit 1
+fi
+if [ ! -x "$(command -v xmllint)" ]; then
+  echo 'Error: xmllint is not installed.' >&2
+  exit 1
+fi
+
 # UPLOAD PACKAGE TO AEM
 function uploadPackage() {
   # Check Param
   if [ $# != 4 ]; then
-    echo "uploadPackage Param Error:" $*
+    echo "[ERR]uploadPackage param error:" $*
     exit 1
   fi
   user=$1
@@ -45,13 +59,13 @@ function uploadPackage() {
     mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/upload/"
   fi
   if [[ $IS_SUCCESS == "true" ]]; then
-    echo "UPLOAD SUCCESS: [$packagePass]"
+    echo "[*]UPLOAD SUCCESS: [$packagePass]"
     if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" ]; then
       touch "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
     fi
     echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
   else
-    echo "UPLOAD ERROR: [$packagePass]"
+    echo "[*]UPLOAD ERROR: [$packagePass]"
     if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" ]; then
       touch "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
     fi
@@ -63,7 +77,7 @@ function uploadPackage() {
 function buildPackage() {
   # Check Param
   if [ $# != 3 ]; then
-    echo "buildPackage Param Error:" $*
+    echo "[ERR]buildPackage Param Error:" $*
     exit 1
   fi
   user=$1
@@ -79,13 +93,13 @@ function buildPackage() {
       mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/build/"
     fi
     if [[ $IS_SUCCESS == "true" ]]; then
-      echo "BUILD SUCCESS: [$packagePass]"
+      echo "[*]BUILD SUCCESS: [$packagePass]"
       if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log" ]; then
         touch "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
       fi
       echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
     else
-      echo "BUILD ERROR: [$packagePass]"
+      echo "[*]BUILD ERROR: [$packagePass]"
       if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" ]; then
         touch "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
       fi
@@ -98,7 +112,7 @@ function buildPackage() {
 function downloadPackage() {
   # Check Param
   if [ $# != 3 ]; then
-    echo "downloadPackage Param Error !" $*
+    echo "[ERR]downloadPackage Param Error !" $*
     exit 1
   fi
   user=$1
@@ -108,17 +122,17 @@ function downloadPackage() {
   if [ ! -d "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/" ]; then
     mkdir -p "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/"
   fi
-  echo -e "\nStart Download ... \n"
+  echo -e "\n[*]READY TO DOWNLOAD ... \n"
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
-    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-    echo "[*] Start Download: [$line] "
+    echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*]Start Download: [$line] "
     curl -u ${user}:${password} http://${ip}:$PORT63/$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
-    echo -e "[*] Download Success !\n"
+    echo -e "[*]Download Success !\n"
   done
-  echo "******************************"
-  echo "*** All downloads complete ***"
-  echo "******************************"
+  echo "[*]******************************"
+  echo "[*]*** All downloads complete ***"
+  echo "[*]******************************"
 }
 
 #######################################
@@ -152,7 +166,7 @@ for ((i = 1; 1; i++)); do
 
   ITEM_RESULT=$(cat $BASE_PATH/$TEMP_FILE_ITEM)
   if [[ $ITEM_RESULT == "" ]]; then
-    echo -e "[*]ITEM READ END ...\n"
+    echo -e "\n[*]ITEM READ END, READY TO BUILD ...\n"
     break
   fi
 
@@ -168,12 +182,12 @@ for ((i = 1; 1; i++)); do
     FILTER_ROOT=$(xmllint --xpath "//item/description/filter[$j]/@root" $BASE_PATH/$TEMP_FILE_ITEM)
     FILTER_ROOT=$(echo "$FILTER_ROOT" | sed s/[[:space:]]//g)
     if [[ $FILTER_ROOT == "" ]]; then
-      echo -e "[*]FILTER READ END ...\n"
+      echo -e "\n[*]FILTER READ END, READY TO MAKE ..."
       break
     fi
     ITEM_FILTER_LIST=("${ITEM_FILTER_LIST[@]}" $FILTER_ROOT)
   done
-  echo "PackageName:[$ITEM_TITLE]; PackageSize:[$ITEM_TOTAL]; FilterCount:[${#ITEM_FILTER_LIST[@]}]"
+  echo "[*]PACKAGE NAME:[$ITEM_TITLE]; PACKAGE SIZE:[$ITEM_TOTAL]; FILTER COUNT:[${#ITEM_FILTER_LIST[@]}]"
 
   #######################################
   ###### MAKING FILTER XML CONTENT ######
@@ -184,7 +198,7 @@ for ((i = 1; 1; i++)); do
   FILTER_XML_TAG_NAME='filter'
   FILTER_XML_CONTENT=$FILTER_XML_HEAD
   for ((x = 0; x < ${#ITEM_FILTER_LIST[@]}; x++)); do
-    echo "$x:${ITEM_FILTER_LIST[x]}"
+    echo "[$x]:${ITEM_FILTER_LIST[x]}"
     FILTER_XML_CONTENT="$FILTER_XML_CONTENT<$FILTER_XML_TAG_NAME ${ITEM_FILTER_LIST[x]}/>"
   done
   FILTER_XML_CONTENT="$FILTER_XML_CONTENT$FILTER_XML_FOOT"

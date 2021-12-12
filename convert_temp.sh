@@ -54,7 +54,23 @@
 
 #echo BUILD_RES
 
-curl -u admin:adminadmin http://localhost:4502/etc/packages/shell_upload/MG_isetan_mistore_shinjuku3_3-total=946-1.0.zip -o ./MG_isetan_mistore_shinjuku3_3-total=946-1.0.zip
+#curl -u admin:adminadmin http://localhost:4502/etc/packages/shell_upload/MG_isetan_mistore_shinjuku3_3-total=946-1.0.zip -o ./MG_isetan_mistore_shinjuku3_3-total=946-1.0.zip
+
+
+# CHECK COMMAND
+if [ ! -x "$(command -v curl)" ]; then
+  echo 'Error: curl is not installed.' >&2
+  exit 1
+fi
+if [ ! -x "$(command -v zip)" ]; then
+  echo 'Error: xmllint is not installed.' >&2
+  exit 1
+fi
+if [ ! -x "$(command -v xmllint)" ]; then
+  echo 'Error: xmllint is not installed.' >&2
+  exit 1
+fi
+
 
 #echo $(echo "/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip" | awk -F '/' '{print $NF}')
 
