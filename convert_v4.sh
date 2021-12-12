@@ -30,7 +30,7 @@ BASE_PATH=$(
 function uploadPackage() {
   # Check Param
   if [ $# != 4 ]; then
-    echo "uploadPackage 引数エラー:" $*
+    echo "uploadPackage Param Error:" $*
     exit 1
   fi
   user=$1
@@ -63,7 +63,7 @@ function uploadPackage() {
 function buildPackage() {
   # Check Param
   if [ $# != 3 ]; then
-    echo "buildPackage 引数エラー:" $*
+    echo "buildPackage Param Error:" $*
     exit 1
   fi
   user=$1
