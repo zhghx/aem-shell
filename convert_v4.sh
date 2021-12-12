@@ -32,7 +32,7 @@ if [ ! -x "$(command -v curl)" ]; then
   exit 1
 fi
 if [ ! -x "$(command -v zip)" ]; then
-  echo 'Error: xmllint is not installed.' >&2
+  echo 'Error: zip is not installed.' >&2
   exit 1
 fi
 if [ ! -x "$(command -v xmllint)" ]; then
