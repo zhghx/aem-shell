@@ -402,7 +402,6 @@ for ((i = 1; 1; i++)); do
   <entry key="lastModifiedBy">'$USER63'</entry>
   <entry key="buildCount">0</entry>
   <entry key="version">'$PACKAGE_VERSION'</entry>
-
   <entry key="createdBy">'$USER63'</entry>
   <entry key="name">'"$ITEM_TITLE-$ITEM_TOTAL"'</entry>
   </properties>'
