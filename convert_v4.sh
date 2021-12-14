@@ -349,11 +349,11 @@ function reDownloadPackage() {
     echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "[*]Start Re-Download: [$line]"
     curl -u ${user}:${password} $line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName"
-    echo -e "[*]Download Re-Complete !\n"
+    echo -e "[*]Download Re-Complete !"
     actualSize=$(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" | awk -F ' ' '{print $5}')
     remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
     if [[ $actualSize == $remoteSize ]]; then
-      echo "[*]RE-DOWNLOAD SUCCESS: [$line]"
+      echo -e "[*]RE-DOWNLOAD SUCCESS: [$line]\n"
       # DELETE ERROR LOG
       FORMAT_LINE=$(echo "$line" | sed 's#/#\\\/#g')
       sed -i "/$FORMAT_LINE/d" "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
@@ -362,7 +362,7 @@ function reDownloadPackage() {
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
     else
-      echo "[*]RE-DOWNLOAD ERROR: [$line]"
+      echo -e "[*]RE-DOWNLOAD ERROR: [$line]\n"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$line") != "" ]]; then
         continue
       fi
