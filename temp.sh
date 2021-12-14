@@ -17,7 +17,7 @@ readonly PROPERTIES_FILE=properties.xml
 readonly AEM_ZIP_FOLDER=pre_build_zip
 readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download_build_done_zip
-readonly GROUP_NAME=shell_upload # 
+readonly GROUP_NAME=shell_upload #
 readonly PACKAGE_VERSION=1.0 #20211213
 
 # SCRIPT STORAGE DIRECTORY
@@ -63,9 +63,9 @@ function uploadPackage() {
   fi
   ZIP_FILE_NAME=$(echo $packagePass | awk -F '/' '{print $NF}')
   # CHECK ALREADY UPLOADED
-  if [[ `cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" | grep "$ZIP_FILE_NAME"` == "" ]]; then
+  if [ `cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" | grep "$ZIP_FILE_NAME"` == "" ]; then
     return
-  if
+  fi
   # UPLOADING
   UPLOAD_RES=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:$PORT63/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
   IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
@@ -338,7 +338,7 @@ reDownloadPackage $USER63 $PASSWORD63 $IP63
 #
 aws s3 cp PACKAGE_NAME s3://path.xxxx/dir/
 
-# DELETE AEM PACKAGE 
+# DELETE AEM PACKAGE
 
 # DELETE TEMP FILE
 rm -rf "$BASE_PATH/$TEMP_FILE_ALL"
