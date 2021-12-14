@@ -285,7 +285,7 @@ function downloadPackage() {
     echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "[*]Start Download: [http://${ip}:$PORT63$line] "
     curl -u ${user}:${password} http://${ip}:$PORT63$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
-    echo -e "[*]Download Success !\n"
+    echo -e "[*]Download Complete !\n"
   done
   # GET ALL PACKAGE INFO
   echo "[*]>>>>>>>>>>>>>>>>> GET ALL PACKAGE INFO XML >>>>>>>>>>>>>>>>>>>>>"
@@ -316,11 +316,73 @@ function downloadPackage() {
   echo "[*]******************************"
 }
 
+# RE-UPLOAD TIMES
+readonly MAX_RE_DOWNLOAD_TIMES=3
+# IF EXIST ERROR DOWNLOAD LOG, Recursive execution
+function reDownloadPackage() {
+  # Check Param
+  if [ $# != 4 ]; then
+    echo "[ERR]reDownloadPackage param error:" $*
+    exit 1
+  fi
+  user=$1
+  password=$2
+  ip=$3
+  # MAX LOOP TIMES HANDLE
+  INIT_RE_DOWNLOAD_TIMES=$4
+  ((INIT_RE_DOWNLOAD_TIMES++))
+  echo -e "\n[*]reDownloadPackage Start [$INIT_RE_DOWNLOAD_TIMES] times ... \n"
+  echo -e "[*]reDownloadPackage Check Re-Download ... \n"
+  # CHECK DOWNLOAD ERROR LOG (No error log exists)
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]; then
+    echo -e "[OK]reDownloadPackage No Files That Need To Be Re-Download !\n"
+    return
+  fi
+  if [ ! -s "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]; then
+    echo -e "[OK]reDownloadPackage No Files That Need To Be Re-Download !\n"
+    return
+  fi
+  # EXIST ERROR DOWNLOAD LOG
+  echo -e "[*]reDownloadPackage Files Exist That Need To Be Re-Download !\n"
+  for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/error.log); do
+    downloadZipName=$(echo $line | awk -F '/' '{print $NF}')
+    echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*]Start Re-Download: [$line]"
+    curl -u ${user}:${password} $line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName"
+    echo -e "[*]Download Re-Complete !\n"
+    actualSize=$(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" | awk -F ' ' '{print $5}')
+    remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+    if [[ $actualSize == $remoteSize ]]; then
+      echo "[*]RE-DOWNLOAD SUCCESS: [$line]"
+      # DELETE ERROR LOG
+      FORMAT_LINE=$(echo "$line" | sed 's#/#\\\/#g')
+      sed -i "/$FORMAT_LINE/d" "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$line") != "" ]]; then
+        continue
+      fi
+      echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+    else
+      echo "[*]RE-DOWNLOAD ERROR: [$line]"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$line") != "" ]]; then
+        continue
+      fi
+      echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+    fi
+  done
+  if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]]; then
+    if [[ $INIT_RE_DOWNLOAD_TIMES -ge $MAX_RE_DOWNLOAD_TIMES ]]; then
+      echo -e "\n[*]Re-Download Times >= Max Re-Download Times !\n"
+      return
+    fi
+    reDownloadPackage $user $password $ip $INIT_RE_DOWNLOAD_TIMES
+  fi
+}
+
 #######################################
 ############### READY #################
 #######################################
 # GET XML FILE
-curl -s $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+curl -s -u ${user}:${password} $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
 
 # CHECK ZIP FOLDER
 if [ -d "$BASE_PATH/$AEM_ZIP_FOLDER" ]; then
@@ -462,8 +524,13 @@ echo "[*]======================================================"
 echo "[*]=============== downloadPackage ======================"
 echo "[*]======================================================"
 downloadPackage $USER63 $PASSWORD63 $IP63
+
 # CHECK AND RE-DOWNLOAD
-# reDownloadPackage $USER63 $PASSWORD63 $IP63
+echo ""
+echo "[*]======================================================"
+echo "[*]=============== reDownloadPackage ===================="
+echo "[*]======================================================"
+reDownloadPackage $USER63 $PASSWORD63 $IP63 0
 
 # ZIP　全部で　ダウンロードしたあと -> S3 -> 本番環境
 

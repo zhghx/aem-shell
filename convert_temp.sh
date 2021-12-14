@@ -115,17 +115,19 @@ BASE_PATH=$(
 
 #xmllint --xpath "//package[downloadName='we.retail.config-4.0.0.zip']/size/text()" ./all_package.xml
 
-for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
-  ACTUAL_SIZE=$(ls -l $file | awk -F ' ' '{print $5}')
-  DOWNLOAD_ZIP_NAME=$(echo $file | awk -F '/' '{print $NF}')
-  REMOTE_SIZE=$(xmllint --xpath "//package[downloadName='$DOWNLOAD_ZIP_NAME']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
-  #  echo "ACTUAL_SIZE:"$ACTUAL_SIZE";REMOTE_SIZE:"$REMOTE_SIZE
-  if [[ $ACTUAL_SIZE == $REMOTE_SIZE ]]; then
-    echo "OK"
-  else
-    echo "ERR"
-  fi
-done
+#for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+#  ACTUAL_SIZE=$(ls -l $file | awk -F ' ' '{print $5}')
+#  DOWNLOAD_ZIP_NAME=$(echo $file | awk -F '/' '{print $NF}')
+#  REMOTE_SIZE=$(xmllint --xpath "//package[downloadName='$DOWNLOAD_ZIP_NAME']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+#  #  echo "ACTUAL_SIZE:"$ACTUAL_SIZE";REMOTE_SIZE:"$REMOTE_SIZE
+#  if [[ $ACTUAL_SIZE == $REMOTE_SIZE ]]; then
+#    echo "OK"
+#  else
+#    echo "ERR"
+#  fi
+#done
+
+echo $(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_common_1-total=987-20211214.zip" | awk -F ' ' '{print $5}')
 
 #echo "cat //response/*[text()='dfs.datanaode.data.dir'/../value]" | xmllint --shell ./all_package.xml
 
