@@ -56,10 +56,10 @@ function uploadPackage() {
   if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/upload/" ]; then
     mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/upload/"
   fi
-  if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" ]; then
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" ]; then
     touch "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
   fi
-  if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" ]; then
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" ]; then
     touch "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
   fi
   ZIP_FILE_NAME=$(echo $packagePass | awk -F '/' '{print $NF}')
@@ -158,10 +158,10 @@ function buildPackage() {
   if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/build/" ]; then
     mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/build/"
   fi
-  if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log" ]; then
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log" ]; then
     touch "$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
   fi
-  if [ -f "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" ]; then
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" ]; then
     touch "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
   fi
   # LOOP upload/success.log
@@ -258,21 +258,59 @@ function downloadPackage() {
     echo "[ERR]All builds failed !"
     exit 1
   fi
-  # CHECK DOWNLOAD LOG FOLDER
+  # CHECK DOWNLOAD LOG FOLDER AND FILE
   if [ ! -d "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/" ]; then
     mkdir -p "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/"
+  fi
+  # CHECK BUILD LOG FOLDER AND FILE
+  if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/download/" ]; then
+    mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/download/"
+  fi
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" ]; then
+    touch "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+  fi
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]; then
+    touch "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
   fi
   echo -e "\n[*]READY TO DOWNLOAD ... \n"
   # LOOP upload/success.log
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
     ZIP_FILE_NAME=$(echo "$line" | awk -F '/' '{print $NF}')
+    # CHECK ALREADY DOWNLOAD
+    if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "http://${ip}:$PORT63$line") != "" ||
+    $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "http://${ip}:$PORT63$line") != "" ]]; then
+      echo "[*]$line: Has Already Download !"
+      continue
+    fi
     echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "[*]Start Download: [http://${ip}:$PORT63$line] "
     curl -u ${user}:${password} http://${ip}:$PORT63$line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
     echo -e "[*]Download Success !\n"
   done
   # GET ALL PACKAGE INFO
-  curl -u ${user}:${password} http://${ip}:$PORT63/crx/packmgr/service.jsp?cmd=ls > $BASE_PATH/$ALL_PACKAGE_IFNO_XML
+  echo "[*]>>>>>>>>>>>>>>>>> GET ALL PACKAGE INFO XML >>>>>>>>>>>>>>>>>>>>>"
+  curl -u ${user}:${password} http://${ip}:$PORT63/crx/packmgr/service.jsp?cmd=ls >$BASE_PATH/$ALL_PACKAGE_IFNO_XML
+  echo "[*]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+  # CHECK DOWNLOAD SIZE
+  for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+    actualSize=$(ls -l $file | awk -F ' ' '{print $5}')
+    downloadZipName=$(echo $file | awk -F '/' '{print $NF}')
+    remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+    packagePass="http://${ip}:$PORT63/etc/packages/$GROUP_NAME/$downloadZipName"
+    if [[ $actualSize == $remoteSize ]]; then
+      echo "[*]DOWNLOAD SUCCESS: [$packagePass]"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packagePass") != "" ]]; then
+        continue
+      fi
+      echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+    else
+      echo "[*]DOWNLOAD ERROR: [$packagePass]"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packagePass") != "" ]]; then
+        continue
+      fi
+      echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+    fi
+  done
   echo "[*]******************************"
   echo "[*]*** All downloads complete ***"
   echo "[*]******************************"

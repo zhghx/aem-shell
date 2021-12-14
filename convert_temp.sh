@@ -34,6 +34,7 @@ readonly PORT63=7769
 # SYSTEM CONFIG
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
+readonly ALL_PACKAGE_IFNO_XML=all_package.xml
 readonly FILTER_FILE=filter.xml
 readonly PROPERTIES_FILE=properties.xml
 readonly AEM_ZIP_FOLDER=pre_build_zip
@@ -112,7 +113,21 @@ BASE_PATH=$(
 
 #curl -u admin:adminadmin http://54.92.43.67:7769/crx/packmgr/service.jsp?cmd=ls > ./package.xml
 
+#xmllint --xpath "//package[downloadName='we.retail.config-4.0.0.zip']/size/text()" ./all_package.xml
 
+for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+  ACTUAL_SIZE=$(ls -l $file | awk -F ' ' '{print $5}')
+  DOWNLOAD_ZIP_NAME=$(echo $file | awk -F '/' '{print $NF}')
+  REMOTE_SIZE=$(xmllint --xpath "//package[downloadName='$DOWNLOAD_ZIP_NAME']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+  #  echo "ACTUAL_SIZE:"$ACTUAL_SIZE";REMOTE_SIZE:"$REMOTE_SIZE
+  if [[ $ACTUAL_SIZE == $REMOTE_SIZE ]]; then
+    echo "OK"
+  else
+    echo "ERR"
+  fi
+done
+
+#echo "cat //response/*[text()='dfs.datanaode.data.dir'/../value]" | xmllint --shell ./all_package.xml
 
 #echo /etc/packages/shell_upload_group/MG_isetan_mistore_shinjuku1_2-total=954-20211214.zip]
 #echo $(echo "/etc/packages/shell_upload/MG_isetan_mistore_shinjuku_1-total=951-1.0.zip" | awk -F '/' '{print $NF}')
