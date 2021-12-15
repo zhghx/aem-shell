@@ -382,7 +382,7 @@ function reDownloadPackage() {
 ############### READY #################
 #######################################
 # GET XML FILE
-curl -s -u ${user}:${password} $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
 
 # CHECK ZIP FOLDER
 if [ -d "$BASE_PATH/$AEM_ZIP_FOLDER" ]; then
