@@ -379,6 +379,12 @@ function uploadToAwsS3() {
   fi
   for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/success.log); do
     zipName=$(echo $line | awk -F '/' '{print $NF}')
+    # CHECK ALREADY S3 UPLOAD
+    if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ||
+    $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
+      echo "[*]$zipName: Has Already S3 Upload !"
+      continue
+    fi
     zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
     s3GetResult=$(aws s3 ls $AWS_S3_PATH/$zipName)
     s3GetResultFormat=$(echo $s3GetResult | sed 's/^s*//' | sed 's/s*$//')
