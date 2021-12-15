@@ -42,6 +42,8 @@ readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download_build_done_zip
 readonly GROUP_NAME=shell_upload_group
 readonly PACKAGE_VERSION=$(date +%Y%m%d)
+# aws s3
+readonly AWS_S3_PATH="s3://oss-zhghx"
 
 # SCRIPT STORAGE DIRECTORY
 BASE_PATH=$(
@@ -127,7 +129,52 @@ BASE_PATH=$(
 #  fi
 #done
 
-echo $(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_common_1-total=987-20211214.zip" | awk -F ' ' '{print $5}')
+#for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+#  echo $file
+#  aws s3 cp $file s3://oss-zhghx/
+#done
+
+# CHECK BUILD LOG FOLDER AND FILE
+if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
+  mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/"
+fi
+if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" ]; then
+  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+fi
+if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+fi
+for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/success.log); do
+  zipName=$(echo $line | awk -F '/' '{print $NF}')
+  zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
+  s3GetResult=$(aws s3 ls $AWS_S3_PATH/$zipName)
+  s3GetResultFormat=$(echo $s3GetResult | sed 's/^s*//' | sed 's/s*$//')
+  #  echo $s3GetResultFormat
+  if [[ $s3GetResultFormat != "" ]]; then
+    echo "[*][$zipName]: AWS S3 Has Already Been Uploaded !"
+  else
+    aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
+    s3CheckResult=$(aws s3 ls $AWS_S3_PATH/$zipName | awk -F ' ' '{print $3}')
+    remoteSize=$(xmllint --xpath "//package[downloadName='$zipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+    if [[ $s3CheckResult == $remoteSize ]]; then
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ]]; then
+        continue
+      fi
+      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+      echo "[*]S3 UPLOAD SUCCESS: [$zipName]"
+    else
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
+        continue
+      fi
+      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+      echo "[*]S3 UPLOAD ERROR: [$zipName]"
+    fi
+  fi
+done
+
+#aws s3 ls s3://oss-zhghx/MG_isetan_mistore_urawa_1-total=982-20211215.zip
+
+#echo $(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_common_1-total=987-20211214.zip" | awk -F ' ' '{print $5}')
 
 #echo "cat //response/*[text()='dfs.datanaode.data.dir'/../value]" | xmllint --shell ./all_package.xml
 

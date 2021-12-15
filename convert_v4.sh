@@ -8,6 +8,8 @@ readonly USER63="admin"
 readonly PASSWORD63="adminadmin"
 readonly IP63="54.92.43.67"
 readonly PORT63=7769
+# aws s3
+readonly AWS_S3_PATH="s3://oss-zhghx/"
 
 # SYSTEM CONFIG
 readonly TEMP_FILE_ALL=temp_all.xml
@@ -382,6 +384,46 @@ function reDownloadPackage() {
   fi
 }
 
+# UPLOAD AEM ZIP TO AWS S3
+function uploadToAwsS3() {
+  # CHECK BUILD LOG FOLDER AND FILE
+  if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
+    mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/"
+  fi
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" ]; then
+    touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+  fi
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+    touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+  fi
+  for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/success.log); do
+    zipName=$(echo $line | awk -F '/' '{print $NF}')
+    zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
+    s3GetResult=$(aws s3 ls $AWS_S3_PATH/$zipName)
+    s3GetResultFormat=$(echo $s3GetResult | sed 's/^s*//' | sed 's/s*$//')
+    if [[ $s3GetResultFormat != "" ]]; then
+      echo "[*][$zipName]: AWS S3 Has Already Been Uploaded !"
+    else
+      aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
+      s3CheckResult=$(aws s3 ls $AWS_S3_PATH/$zipName | awk -F ' ' '{print $3}')
+      remoteSize=$(xmllint --xpath "//package[downloadName='$zipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+      if [[ $s3CheckResult == $remoteSize ]]; then
+        if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ]]; then
+          continue
+        fi
+        echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+        echo "[*]S3 UPLOAD SUCCESS: [$zipName]"
+      else
+        if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
+          continue
+        fi
+        echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+        echo "[*]S3 UPLOAD ERROR: [$zipName]"
+      fi
+    fi
+  done
+}
+
 #######################################
 ############### READY #################
 #######################################
@@ -536,8 +578,20 @@ echo "[*]=============== reDownloadPackage ===================="
 echo "[*]======================================================"
 reDownloadPackage $USER63 $PASSWORD63 $IP63 0
 
-# ZIP　全部で　ダウンロードしたあと -> S3 -> 本番環境
+# UPLOAD TO AWS
+echo ""
+echo "[*]======================================================"
+echo "[*]================= uploadToAwsS3 ======================"
+echo "[*]======================================================"
+uploadToAwsS3
 
+# ZIP　全部で　ダウンロードしたあと -> S3 -> 本番環境
+#
+# upload
+# aws s3 cp ./convert_v4.sh s3://oss-zhghx/
+# download
+# aws s3 cp s3://oss-zhghx/convert_v4.sh ./
+#
 # UPLOAD S3
 #
 # [ec2-user@dvxvz0100201 build]$
