@@ -111,25 +111,18 @@ function reUploadPackage() {
   fi
   # EXIST ERROR UPLOAD LOG
   echo -e "[*]reUploadPackage Files Exist That Need To Be Re-Uploaded !\n"
-  for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/upload/error.log); do
-    packagePass="$BASE_PATH/$AEM_ZIP_FOLDER/$line"
-    UPLOAD_RES=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:$PORT63/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
-    IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
-    ZIP_FILE_NAME=$(echo $packagePass | awk -F '/' '{print $NF}')
-    if [[ $IS_SUCCESS == "true" ]]; then
+  for zipName in $(cat $BASE_PATH/$AEM_LOG_FOLDER/upload/error.log); do
+    packagePass="$BASE_PATH/$AEM_ZIP_FOLDER/$zipName"
+    uploadRes=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:$PORT63/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
+    isSuccess=$(echo $uploadRes | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
+    if [[ $isSuccess == "true" ]]; then
       # DELETE ERROR LOG
-      sed -i "/$line/d" "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" | grep "$ZIP_FILE_NAME") != "" ]]; then
+      sed -i "/$zipName/d" "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" | grep "$zipName") != "" ]]; then
         continue
       fi
-      echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
+      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
       echo "[*]RE UPLOAD SUCCESS: [$packagePass]"
-    else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" | grep "$ZIP_FILE_NAME") != "" ]]; then
-        continue
-      fi
-      echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
-      echo "[*]RE UPLOAD ERROR: [$packagePass]"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" ]]; then
@@ -228,12 +221,6 @@ function reBuildPackage() {
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
       echo "[*]RE BUILD SUCCESS: [$line]"
-    else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" | grep "$line") != "" ]]; then
-        continue
-      fi
-      echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
-      echo "[*]RE BUILD ERROR: [$line]"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" ]]; then
@@ -367,12 +354,6 @@ function reDownloadPackage() {
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
       echo -e "[*]RE-DOWNLOAD SUCCESS: [$line]\n"
-    else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$line") != "" ]]; then
-        continue
-      fi
-      echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
-      echo -e "[*]RE-DOWNLOAD ERROR: [$line]\n"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]]; then
