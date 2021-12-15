@@ -73,11 +73,11 @@ function uploadPackage() {
   UPLOAD_RES=$(curl -sSi -u ${user}:${password} -F cmd=upload -F force=true -F package=@${packagePass} http://${ip}:$PORT63/crx/packmgr/service/.json | awk -F 'success' '/msg/{print $0}')
   IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
   if [[ $IS_SUCCESS == "true" ]]; then
-    echo "[*]UPLOAD SUCCESS: [$packagePass]"
     echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
+    echo "[*]UPLOAD SUCCESS: [$packagePass]"
   else
-    echo "[*]UPLOAD ERROR: [$packagePass]"
     echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
+    echo "[*]UPLOAD ERROR: [$packagePass]"
   fi
 }
 
@@ -115,19 +115,19 @@ function reUploadPackage() {
     IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
     ZIP_FILE_NAME=$(echo $packagePass | awk -F '/' '{print $NF}')
     if [[ $IS_SUCCESS == "true" ]]; then
-      echo "[*]RE UPLOAD SUCCESS: [$packagePass]"
       # DELETE ERROR LOG
       sed -i "/$line/d" "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log" | grep "$ZIP_FILE_NAME") != "" ]]; then
         continue
       fi
       echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/success.log"
+      echo "[*]RE UPLOAD SUCCESS: [$packagePass]"
     else
-      echo "[*]RE UPLOAD ERROR: [$packagePass]"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" | grep "$ZIP_FILE_NAME") != "" ]]; then
         continue
       fi
       echo $ZIP_FILE_NAME >>"$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log"
+      echo "[*]RE UPLOAD ERROR: [$packagePass]"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/upload/error.log" ]]; then
@@ -177,11 +177,11 @@ function buildPackage() {
     BUILD_RES=$(curl -sSi -u ${user}:${password} -X POST http://${ip}:$PORT63/crx/packmgr/service/.json${packagePass}?cmd=build | awk -F 'success' '/msg/{print $0}')
     IS_SUCCESS=$(echo $BUILD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
     if [[ $IS_SUCCESS == "true" ]]; then
-      echo "[*]BUILD SUCCESS: [$packagePass]"
       echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
+      echo "[*]BUILD SUCCESS: [$packagePass]"
     else
-      echo "[*]BUILD ERROR: [$packagePass]"
       echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
+      echo "[*]BUILD ERROR: [$packagePass]"
     fi
   done
 }
@@ -218,7 +218,6 @@ function reBuildPackage() {
     BUILD_RES=$(curl -sSi -u ${user}:${password} -X POST http://${ip}:$PORT63/crx/packmgr/service/.json${line}?cmd=build | awk -F 'success' '/msg/{print $0}')
     IS_SUCCESS=$(echo $BUILD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
     if [[ $IS_SUCCESS == "true" ]]; then
-      echo "[*]RE BUILD SUCCESS: [$line]"
       # DELETE ERROR LOG
       FORMAT_LINE=$(echo "$line" | sed 's#/#\\\/#g')
       sed -i "/$FORMAT_LINE/d" "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
@@ -226,12 +225,13 @@ function reBuildPackage() {
         continue
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/build/success.log"
+      echo "[*]RE BUILD SUCCESS: [$line]"
     else
-      echo "[*]RE BUILD ERROR: [$line]"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" | grep "$line") != "" ]]; then
         continue
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/build/error.log"
+      echo "[*]RE BUILD ERROR: [$line]"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/build/error.log" ]]; then
@@ -288,9 +288,11 @@ function downloadPackage() {
     echo -e "[*]Download Complete !\n"
   done
   # GET ALL PACKAGE INFO
-  echo "[*]>>>>>>>>>>>>>>>>> GET ALL PACKAGE INFO XML >>>>>>>>>>>>>>>>>>>>>"
+  echo ""
+  echo "[*]>>>>>>>>>>>>>> GET ALL PACKAGE INFO XML: [$ALL_PACKAGE_IFNO_XML] >>>>>>>>>>>>>>>>>"
   curl -u ${user}:${password} http://${ip}:$PORT63/crx/packmgr/service.jsp?cmd=ls >$BASE_PATH/$ALL_PACKAGE_IFNO_XML
-  echo "[*]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+  echo "[*]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+  echo ""
   # CHECK DOWNLOAD SIZE
   for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
     actualSize=$(ls -l $file | awk -F ' ' '{print $5}')
@@ -298,22 +300,23 @@ function downloadPackage() {
     remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
     packagePass="http://${ip}:$PORT63/etc/packages/$GROUP_NAME/$downloadZipName"
     if [[ $actualSize == $remoteSize ]]; then
-      echo "[*]DOWNLOAD SUCCESS: [$packagePass]"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packagePass") != "" ]]; then
         continue
       fi
       echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+      echo "[*]DOWNLOAD SUCCESS: [$packagePass]"
     else
-      echo "[*]DOWNLOAD ERROR: [$packagePass]"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packagePass") != "" ]]; then
         continue
       fi
       echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+      echo "[*]DOWNLOAD ERROR: [$packagePass]"
     fi
   done
-  echo "[*]******************************"
-  echo "[*]*** All downloads complete ***"
-  echo "[*]******************************"
+  echo ""
+  echo "[*]******************************************************"
+  echo "[*]*************** All downloads complete ***************"
+  echo "[*]******************************************************"
 }
 
 # RE-UPLOAD TIMES
@@ -331,7 +334,8 @@ function reDownloadPackage() {
   # MAX LOOP TIMES HANDLE
   INIT_RE_DOWNLOAD_TIMES=$4
   ((INIT_RE_DOWNLOAD_TIMES++))
-  echo -e "\n[*]reDownloadPackage Start [$INIT_RE_DOWNLOAD_TIMES] times ... \n"
+  echo ""
+  echo -e "[*]reDownloadPackage Start [$INIT_RE_DOWNLOAD_TIMES] times ... \n"
   echo -e "[*]reDownloadPackage Check Re-Download ... \n"
   # CHECK DOWNLOAD ERROR LOG (No error log exists)
   if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]; then
@@ -349,11 +353,10 @@ function reDownloadPackage() {
     echo "[*]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     echo "[*]Start Re-Download: [$line]"
     curl -u ${user}:${password} $line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName"
-    echo -e "[*]Download Re-Complete !"
+    echo -e "[*]Download Re-Complete !\n"
     actualSize=$(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" | awk -F ' ' '{print $5}')
     remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
     if [[ $actualSize == $remoteSize ]]; then
-      echo -e "[*]RE-DOWNLOAD SUCCESS: [$line]\n"
       # DELETE ERROR LOG
       FORMAT_LINE=$(echo "$line" | sed 's#/#\\\/#g')
       sed -i "/$FORMAT_LINE/d" "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
@@ -361,12 +364,13 @@ function reDownloadPackage() {
         continue
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+      echo -e "[*]RE-DOWNLOAD SUCCESS: [$line]\n"
     else
-      echo -e "[*]RE-DOWNLOAD ERROR: [$line]\n"
       if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$line") != "" ]]; then
         continue
       fi
       echo $line >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+      echo -e "[*]RE-DOWNLOAD ERROR: [$line]\n"
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" ]]; then
@@ -549,4 +553,4 @@ reDownloadPackage $USER63 $PASSWORD63 $IP63 0
 rm -rf "$BASE_PATH/$TEMP_FILE_ALL"
 rm -rf "$BASE_PATH/$TEMP_FILE_ITEM"
 
-echo -e "\n[*]!!! Execution complete !!!"
+echo "[*]!!! Execution complete !!!"
