@@ -9,7 +9,7 @@ readonly PASSWORD63="adminadmin"
 readonly IP63="54.92.43.67"
 readonly PORT63=7769
 # aws s3
-readonly AWS_S3_PATH="s3://oss-zhghx/"
+readonly AWS_S3_PATH="s3://oss-zhghx"
 
 # SYSTEM CONFIG
 readonly TEMP_FILE_ALL=temp_all.xml
@@ -424,6 +424,51 @@ function uploadToAwsS3() {
   done
 }
 
+# RE-S3-UPLOAD TIMES
+readonly MAX_RE_S3_UPLOAD_TIMES=3
+# IF EXIST ERROR RE_S3_UPLOAD LOG, Recursive execution
+function reUploadToAwsS3() {
+  # MAX LOOP TIMES HANDLE
+  INIT_RE_S3_UPLOAD_TIMES=$1
+  ((INIT_RE_S3_UPLOAD_TIMES++))
+  echo ""
+  echo -e "[*]reUploadToAwsS3 Start [$INIT_RE_S3_UPLOAD_TIMES] times ... \n"
+  echo -e "[*]reUploadToAwsS3 Check Re-S3-Upload ... \n"
+  # CHECK RE-S3-UPLOAD ERROR LOG (No error log exists)
+  if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+    echo -e "[OK]reUploadToAwsS3 No Files That Need To Be Re-S3-Upload !\n"
+    return
+  fi
+  if [ ! -s "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+    echo -e "[OK]reUploadToAwsS3 No Files That Need To Be Re-S3-Upload !\n"
+    return
+  fi
+  # EXIST ERROR RE-S3-UPLOAD LOG
+  echo -e "[*]reUploadToAwsS3 Files Exist That Need To Be Re-S3-Upload !\n"
+  for zipName in $(cat $BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log); do
+    zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
+    aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
+    s3CheckResult=$(aws s3 ls $AWS_S3_PATH/$zipName | awk -F ' ' '{print $3}')
+    remoteSize=$(xmllint --xpath "//package[downloadName='$zipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+    if [[ $s3CheckResult == $remoteSize ]]; then
+      # DELETE ERROR LOG
+      sed -i "/$zipName/d" "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ]]; then
+        continue
+      fi
+      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+      echo "[*]RE-S3-UPLOAD SUCCESS: [$zipName]"
+    fi
+  done
+  if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]]; then
+    if [[ $INIT_RE_S3_UPLOAD_TIMES -ge $MAX_RE_S3_UPLOAD_TIMES ]]; then
+      echo -e "\n[*]Re-S3-Upload Times >= Max Re-S3-Upload Times !\n"
+      return
+    fi
+    reUploadToAwsS3 $INIT_RE_S3_UPLOAD_TIMES
+  fi
+}
+
 #######################################
 ############### READY #################
 #######################################
@@ -578,12 +623,19 @@ echo "[*]=============== reDownloadPackage ===================="
 echo "[*]======================================================"
 reDownloadPackage $USER63 $PASSWORD63 $IP63 0
 
-# UPLOAD TO AWS
+# UPLOAD TO AWS S3
 echo ""
 echo "[*]======================================================"
 echo "[*]================= uploadToAwsS3 ======================"
 echo "[*]======================================================"
 uploadToAwsS3
+
+# CHECK AND RE-UPLOAD TO AWS S3
+echo ""
+echo "[*]======================================================"
+echo "[*]================ reUploadToAwsS3 ====================="
+echo "[*]======================================================"
+reUploadToAwsS3 0
 
 # ZIP　全部で　ダウンロードしたあと -> S3 -> 本番環境
 #

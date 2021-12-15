@@ -135,44 +135,56 @@ BASE_PATH=$(
 #done
 
 # CHECK BUILD LOG FOLDER AND FILE
-if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
-  mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/"
-fi
-if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" ]; then
-  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
-fi
-if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
-  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
-fi
-for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/success.log); do
-  zipName=$(echo $line | awk -F '/' '{print $NF}')
-  zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
-  s3GetResult=$(aws s3 ls $AWS_S3_PATH/$zipName)
-  s3GetResultFormat=$(echo $s3GetResult | sed 's/^s*//' | sed 's/s*$//')
-  #  echo $s3GetResultFormat
-  if [[ $s3GetResultFormat != "" ]]; then
-    echo "[*][$zipName]: AWS S3 Has Already Been Uploaded !"
-  else
-    aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
-    s3CheckResult=$(aws s3 ls $AWS_S3_PATH/$zipName | awk -F ' ' '{print $3}')
-    remoteSize=$(xmllint --xpath "//package[downloadName='$zipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
-    if [[ $s3CheckResult == $remoteSize ]]; then
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ]]; then
-        continue
-      fi
-      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
-      echo "[*]S3 UPLOAD SUCCESS: [$zipName]"
-    else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
-        continue
-      fi
-      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
-      echo "[*]S3 UPLOAD ERROR: [$zipName]"
-    fi
-  fi
-done
+#if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
+#  mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/"
+#fi
+#if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" ]; then
+#  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+#fi
+#if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+#  touch "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+#fi
+#for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/download/success.log); do
+#  zipName=$(echo $line | awk -F '/' '{print $NF}')
+#  zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$zipName
+#  s3GetResult=$(aws s3 ls $AWS_S3_PATH/$zipName)
+#  s3GetResultFormat=$(echo $s3GetResult | sed 's/^s*//' | sed 's/s*$//')
+#  #  echo $s3GetResultFormat
+#  if [[ $s3GetResultFormat != "" ]]; then
+#    echo "[*][$zipName]: AWS S3 Has Already Been Uploaded !"
+#  else
+#    aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
+#    s3CheckResult=$(aws s3 ls $AWS_S3_PATH/$zipName | awk -F ' ' '{print $3}')
+#    remoteSize=$(xmllint --xpath "//package[downloadName='$zipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
+#    if [[ $s3CheckResult == $remoteSize ]]; then
+#      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log" | grep "$zipName") != "" ]]; then
+#        continue
+#      fi
+#      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
+#      echo "[*]S3 UPLOAD SUCCESS: [$zipName]"
+#    else
+#      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
+#        continue
+#      fi
+#      echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log"
+#      echo "[*]S3 UPLOAD ERROR: [$zipName]"
+#    fi
+#  fi
+#done
+
+#remoteSize=5765
+#AAA=$(aws s3 ls s3://oss-zhghx/MG_isetan_mistore_urawa_1-total=982-20211215.zip | awk -F ' ' '{print $3}')
+#echo $AAA
+#if [[ $AAA == $remoteSize ]]; then
+#  echo 'OK'
+#else
+#  echo '----'
+#fi
 
 #aws s3 ls s3://oss-zhghx/MG_isetan_mistore_urawa_1-total=982-20211215.zip
+
+zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_mistore_urawa_1-total=982-20211215.zip
+aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
 
 #echo $(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_common_1-total=987-20211214.zip" | awk -F ' ' '{print $5}')
 
