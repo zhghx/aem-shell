@@ -1,5 +1,15 @@
 #!/bin/bash
 
+### BEGIN DESCRIPTION
+#
+# Required Tool:
+# -> curl, zip, xmllint, pwd, mkdir, touch, cat, sed, grep, awk, rm, aws
+#
+# Need to install Tool:
+# -> zip, xmllint, aws, curl
+#
+### END DESCRIPTION
+
 # xml data sources
 readonly XML_URL=http://54.92.43.67:7771/res.xml
 
@@ -40,6 +50,10 @@ if [ ! -x "$(command -v zip)" ]; then
 fi
 if [ ! -x "$(command -v xmllint)" ]; then
   echo 'Error: xmllint is not installed.' >&2
+  exit 1
+fi
+if [ ! -x "$(command -v aws)" ]; then
+  echo 'Error: aws is not installed.' >&2
   exit 1
 fi
 
