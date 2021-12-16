@@ -16,7 +16,7 @@
 
 AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
 
-# aws-cli PATH
+# aws-cli PATH; * crontab not find aws *
 export PATH=$AWS_CLI_PATH:$PATH
 
 # xml data sources
