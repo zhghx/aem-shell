@@ -297,23 +297,32 @@ function downloadPackage() {
   echo "[*]<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
   echo ""
   # CHECK DOWNLOAD SIZE
-  for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
-    actualSize=$(ls -l $file | awk -F ' ' '{print $5}')
-    downloadZipName=$(echo $file | awk -F '/' '{print $NF}')
+  for line in $(cat $BASE_PATH/$AEM_LOG_FOLDER/build/success.log); do
+    downloadZipName=$(echo "$line" | awk -F '/' '{print $NF}')
+    packageUrl="http://${ip}:$PORT63/etc/packages/$GROUP_NAME/$downloadZipName"
+    # FILE NOT EXIST
+    if [[ ! -f "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" ]]; then
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packageUrl") == "" ]]; then
+        echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+        echo "[*]DOWNLOAD ERROR: [$packageUrl]"
+      fi
+      continue
+    fi
+    # FILE EXIST
+    actualSize=$(ls -l $BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName | awk -F ' ' '{print $5}')
     remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
-    packagePass="http://${ip}:$PORT63/etc/packages/$GROUP_NAME/$downloadZipName"
     if [[ $actualSize == $remoteSize ]]; then
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packagePass") != "" ]]; then
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packageUrl") != "" ]]; then
         continue
       fi
-      echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
-      echo "[*]DOWNLOAD SUCCESS: [$packagePass]"
+      echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+      echo "[*]DOWNLOAD SUCCESS: [$packageUrl]"
     else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packagePass") != "" ]]; then
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packageUrl") != "" ]]; then
         continue
       fi
-      echo $packagePass >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
-      echo "[*]DOWNLOAD ERROR: [$packagePass]"
+      echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
+      echo "[*]DOWNLOAD ERROR: [$packageUrl]"
     fi
   done
   echo ""
@@ -414,6 +423,7 @@ function uploadToAwsS3() {
         fi
         echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
         echo "[*]S3 UPLOAD SUCCESS: [$zipName]"
+        rm -rf $zipLocalPath
       else
         if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" | grep "$zipName") != "" ]]; then
           continue
@@ -423,6 +433,14 @@ function uploadToAwsS3() {
       fi
     fi
   done
+}
+
+# DELETE ALL S3 UPLOADED ZIP
+function deleteAllS3UploadedZip() {
+  #  for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+  #    rm -rf $file
+  #  done
+  return
 }
 
 # RE-S3-UPLOAD TIMES
@@ -437,10 +455,12 @@ function reUploadToAwsS3() {
   echo -e "[*]reUploadToAwsS3 Check Re-S3-Upload ... \n"
   # CHECK RE-S3-UPLOAD ERROR LOG (No error log exists)
   if [ ! -f "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+    deleteAllS3UploadedZip
     echo -e "[OK]reUploadToAwsS3 No Files That Need To Be Re-S3-Upload !\n"
     return
   fi
   if [ ! -s "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]; then
+    deleteAllS3UploadedZip
     echo -e "[OK]reUploadToAwsS3 No Files That Need To Be Re-S3-Upload !\n"
     return
   fi
@@ -459,6 +479,7 @@ function reUploadToAwsS3() {
       fi
       echo $zipName >>"$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/success.log"
       echo "[*]RE-S3-UPLOAD SUCCESS: [$zipName]"
+      rm -rf $zipLocalPath
     fi
   done
   if [[ -s "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/error.log" ]]; then
@@ -624,19 +645,19 @@ echo "[*]=============== reDownloadPackage ===================="
 echo "[*]======================================================"
 reDownloadPackage $USER63 $PASSWORD63 $IP63 0
 
-# UPLOAD TO AWS S3
-echo ""
-echo "[*]======================================================"
-echo "[*]================= uploadToAwsS3 ======================"
-echo "[*]======================================================"
-uploadToAwsS3
-
-# CHECK AND RE-UPLOAD TO AWS S3
-echo ""
-echo "[*]======================================================"
-echo "[*]================ reUploadToAwsS3 ====================="
-echo "[*]======================================================"
-reUploadToAwsS3 0
+## UPLOAD TO AWS S3
+#echo ""
+#echo "[*]======================================================"
+#echo "[*]================= uploadToAwsS3 ======================"
+#echo "[*]======================================================"
+#uploadToAwsS3
+#
+## CHECK AND RE-UPLOAD TO AWS S3
+#echo ""
+#echo "[*]======================================================"
+#echo "[*]================ reUploadToAwsS3 ====================="
+#echo "[*]======================================================"
+#reUploadToAwsS3 0
 
 # ZIP　全部で　ダウンロードしたあと -> S3 -> 本番環境
 #

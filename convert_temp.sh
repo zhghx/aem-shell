@@ -134,6 +134,23 @@ BASE_PATH=$(
 #  aws s3 cp $file s3://oss-zhghx/
 #done
 
+#for file in $BASE_PATH/$AEM_DOWNLOAD_FOLDER/*; do
+#  actualSize=$(ls -l $file | awk -F ' ' '{print $5}')
+#  echo $actualSize
+#done
+
+#wget --http-user=admin --http-password=adminadmin http://54.92.43.67:7769/etc/packages/shell_upload_group/MG_isetan_mistore_kyoto_1-total=983-20211216.zip -P "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
+
+#wget --user=admin --password=adminadmin http://54.92.43.67:7769/etc/packages/shell_upload_group/MG_isetan_mistore_kyoto_1-total=983-20211216.zip -P "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$ZIP_FILE_NAME"
+
+#echo $(ls -l $BASE_PATH/$AEM_DOWNLOAD_FOLDER/aa.zip | awk -F ' ' '{print $5}')
+
+#if [[ ! -f "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/aa.zip" ]]; then
+#  echo "NO"
+#fi
+
+#wget --user=admin --password=adminadmin http://54.92.43.67:7769/etc/packages/shell_upload_group/MG_mitsukoshi_mistore_matsuyama_1-total=742-20211216.zip -P /Users/zhenghegong/CODE/aem-custom/shell/download_build_done_zip/
+
 # CHECK BUILD LOG FOLDER AND FILE
 #if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
 #  mkdir -p "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/"
@@ -183,8 +200,8 @@ BASE_PATH=$(
 
 #aws s3 ls s3://oss-zhghx/MG_isetan_mistore_urawa_1-total=982-20211215.zip
 
-zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_mistore_urawa_1-total=982-20211215.zip
-aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
+#zipLocalPath=$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_mistore_urawa_1-total=982-20211215.zip
+#aws s3 cp "$zipLocalPath" "$AWS_S3_PATH/"
 
 #echo $(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/MG_isetan_common_1-total=987-20211214.zip" | awk -F ' ' '{print $5}')
 
