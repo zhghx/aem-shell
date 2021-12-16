@@ -14,8 +14,10 @@
 #
 ### END DESCRIPTION
 
+AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
+
 # aws-cli PATH
-export PATH=/System/Volumes/Data/opt/homebrew/bin/:$PATH
+export PATH=$AWS_CLI_PATH:$PATH
 
 # xml data sources
 readonly XML_URL=http://54.92.43.67:7771/res.xml
