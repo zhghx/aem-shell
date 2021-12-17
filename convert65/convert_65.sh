@@ -39,13 +39,24 @@ BASE_PATH=$(
   pwd
 )
 
+# CHECK LOCK EXIST
+if [[ -f $BASE_PATH/$CONVERT_LOCK ]]; then
+  echo "[*]$BASE_PATH/$CONVERT_LOCK:  file is already exists"
+  rm -rf $BASE_PATH/$CONVERT_LOCK
+  exit 1
+else
+  touch $BASE_PATH/$CONVERT_LOCK
+fi
+
 # CHECK CONFIG
 if [ ! -f "$BASE_PATH/$CONFIG_INI" ]; then
   echo 'Error: [config.ini] is not find.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 if [ ! -s "$BASE_PATH/$CONFIG_INI" ]; then
   echo 'Error: [config.ini] is empty.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 
@@ -78,15 +89,6 @@ if [[ $PORT65 == "" ]]; then
   echo 'Error: [config.ini] PORT65 is not find.' >&2
   rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
-fi
-
-# CHECK LOCK EXIST
-if [[ -f $BASE_PATH/$CONVERT_LOCK ]]; then
-  echo "[*]$BASE_PATH/$CONVERT_LOCK:  file is already exists"
-  rm -rf $BASE_PATH/$CONVERT_LOCK
-  exit 1
-else
-  touch $BASE_PATH/$CONVERT_LOCK
 fi
 
 #######################################
