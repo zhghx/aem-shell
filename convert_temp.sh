@@ -51,12 +51,22 @@ readonly USER63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' |
 readonly PASSWORD63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
 readonly IP63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
 readonly PORT63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
 
 echo $XML_URL
 echo $USER63
 echo $PASSWORD63
 echo $IP63
 echo $PORT63
+echo $AWS_S3_PATH
+
+#curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+#aws s3 cp "$BASE_PATH/$TEMP_FILE_ALL" "$AWS_S3_PATH/"
+
+aws s3 cp "$AWS_S3_PATH/$TEMP_FILE_ALL" "$BASE_PATH/$TEMP_FILE_ALL"
+
+echo "11"
+
 
 #for line in `cat $BASE_PATH/$AEM_LOG_FOLDER/upload/success.log`
 #do

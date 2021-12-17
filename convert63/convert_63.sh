@@ -57,6 +57,7 @@ readonly USER63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' |
 readonly PASSWORD63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
 readonly IP63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
 readonly PORT63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
 
 # CHECK CONFIG
 if [[ $XML_URL == "" ]]; then
@@ -538,6 +539,8 @@ function reUploadToAwsS3() {
 #######################################
 # GET XML FILE
 curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+# XML FILE UPLOAD S3
+aws s3 cp "$BASE_PATH/$TEMP_FILE_ALL" "$AWS_S3_PATH/"
 
 # CHECK ZIP FOLDER
 if [ -d "$BASE_PATH/$AEM_ZIP_FOLDER" ]; then

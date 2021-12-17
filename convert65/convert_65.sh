@@ -56,28 +56,34 @@ readonly USER65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' |
 readonly PASSWORD65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
 readonly IP65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
 readonly PORT65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
 
 # CHECK CONFIG
 if [[ $XML_URL == "" ]]; then
   echo 'Error: [config.ini] XML_URL is not find.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 if [[ $USER65 == "" ]]; then
   echo 'Error: [config.ini] USER65 is not find.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 if [[ $IP65 == "" ]]; then
   echo 'Error: [config.ini] IP65 is not find.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 if [[ $PORT65 == "" ]]; then
   echo 'Error: [config.ini] PORT65 is not find.' >&2
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 fi
 
 # CHECK LOCK EXIST
 if [[ -f $BASE_PATH/$CONVERT_LOCK ]]; then
   echo "[*]$BASE_PATH/$CONVERT_LOCK:  file is already exists"
+  rm -rf $BASE_PATH/$CONVERT_LOCK
   exit 1
 else
   touch $BASE_PATH/$CONVERT_LOCK
@@ -87,7 +93,22 @@ fi
 ############### READY #################
 #######################################
 # GET XML FILE
-curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+# curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+# UPLOAD S3
+aws s3 cp "$AWS_S3_PATH/$TEMP_FILE_ALL" "$BASE_PATH/$TEMP_FILE_ALL"
+# CHECK XML FILE
+if [ ! -f "$BASE_PATH/$TEMP_FILE_ALL" ]; then
+  echo "Error: [$TEMP_FILE_ALL] is not find." >&2
+  # REMOVE THE LOCK
+  rm -rf $BASE_PATH/$CONVERT_LOCK
+  exit 1
+fi
+if [ ! -s "$BASE_PATH/$TEMP_FILE_ALL" ]; then
+  echo "Error: [$TEMP_FILE_ALL] is empty." >&2
+  # REMOVE THE LOCK
+  rm -rf $BASE_PATH/$CONVERT_LOCK
+  exit 1
+fi
 
 # INIT LOG FILE
 # DOWNLOAD LOG
