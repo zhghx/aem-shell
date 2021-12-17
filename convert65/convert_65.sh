@@ -14,23 +14,13 @@
 #
 ### END DESCRIPTION
 
-AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
+#AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
 
 # aws-cli PATH; * crontab not find aws *
-export PATH=$AWS_CLI_PATH:$PATH
-
-# xml data sources
-readonly XML_URL=http://54.92.43.67:7771/res.xml
-
-# aem server info for (upload, build, download)
-readonly USER65="admin"
-readonly PASSWORD65="adminadmin"
-readonly IP65="54.92.43.67"
-readonly PORT65=7769
-# aws s3
-readonly AWS_S3_PATH="s3://oss-zhghx"
+# export PATH=$AWS_CLI_PATH:$PATH
 
 # SYSTEM CONFIG
+readonly CONFIG_INI=config.ini
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly ALL_PACKAGE_IFNO_XML=all_package.xml
@@ -48,6 +38,42 @@ BASE_PATH=$(
   cd $(dirname $0)
   pwd
 )
+
+# CHECK CONFIG
+if [ ! -f "$BASE_PATH/$CONFIG_INI" ]; then
+  echo 'Error: [config.ini] is not find.' >&2
+  exit 1
+fi
+if [ ! -s "$BASE_PATH/$CONFIG_INI" ]; then
+  echo 'Error: [config.ini] is empty.' >&2
+  exit 1
+fi
+
+# xml data sources
+readonly XML_URL=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"XML_URL") print}' | awk -F '=' '{print $2}')
+# aem server info for (upload, build, download)
+readonly USER65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' | awk -F '=' '{print $2}')
+readonly PASSWORD65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
+readonly IP65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
+readonly PORT65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+
+# CHECK CONFIG
+if [[ $XML_URL == "" ]]; then
+  echo 'Error: [config.ini] XML_URL is not find.' >&2
+  exit 1
+fi
+if [[ $USER65 == "" ]]; then
+  echo 'Error: [config.ini] USER65 is not find.' >&2
+  exit 1
+fi
+if [[ $IP65 == "" ]]; then
+  echo 'Error: [config.ini] IP65 is not find.' >&2
+  exit 1
+fi
+if [[ $PORT65 == "" ]]; then
+  echo 'Error: [config.ini] PORT65 is not find.' >&2
+  exit 1
+fi
 
 # CHECK LOCK EXIST
 if [[ -f $BASE_PATH/$CONVERT_LOCK ]]; then

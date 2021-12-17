@@ -22,16 +22,9 @@
 #echo $ITEM_TITLE
 
 #xmllint --xpath "//it22em/title/text()" ./res.xml >/dev/null 3>&1
-# xml data sources
-readonly XML_URL=http://54.92.43.67:7771/res.xml
-
-# aem server info for (upload, build, download)
-readonly USER63="admin"
-readonly PASSWORD63="adminadmin"
-readonly IP63="54.92.43.67"
-readonly PORT63=7769
 
 # SYSTEM CONFIG
+readonly CONFIG_INI=config.ini
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly ALL_PACKAGE_IFNO_XML=all_package.xml
@@ -50,6 +43,20 @@ BASE_PATH=$(
   cd $(dirname $0)
   pwd
 )
+
+# xml data sources
+readonly XML_URL=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"XML_URL") print}' | awk -F '=' '{print $2}')
+# aem server info for (upload, build, download)
+readonly USER63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' | awk -F '=' '{print $2}')
+readonly PASSWORD63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
+readonly IP63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
+readonly PORT63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+
+echo $XML_URL
+echo $USER63
+echo $PASSWORD63
+echo $IP63
+echo $PORT63
 
 #for line in `cat $BASE_PATH/$AEM_LOG_FOLDER/upload/success.log`
 #do
@@ -152,10 +159,10 @@ BASE_PATH=$(
 #wget --user=admin --password=adminadmin http://54.92.43.67:7769/etc/packages/shell_upload_group/MG_mitsukoshi_mistore_matsuyama_1-total=742-20211216.zip -P /Users/zhenghegong/CODE/aem-custom/shell/download_build_done_zip/
 #curl -sSi -u admin:adminadmin -F cmd=upload -F force=true -F package=@/Users/zhenghegong/CODE/aem-custom/shell/download_s3_to_65_zip/MG_isetan_mistore_shinjuku3_2-total=934-20211216.zip http://54.92.43.67:7769/crx/packmgr/service/.json | awk '{if($0~"success") print}'
 
-UPLOAD_RES=$(curl -sSi -u admin:adminadmin -F cmd=install http://54.92.43.67:7769/crx/packmgr/service/.json/etc/packages/shell_upload_group/MG_isetan_mistore_shinjuku3_2-total=934-20211216.zip | awk '{if($0~"success") print}')
-IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
-
-echo $IS_SUCCESS
+#UPLOAD_RES=$(curl -sSi -u admin:adminadmin -F cmd=install http://54.92.43.67:7769/crx/packmgr/service/.json/etc/packages/shell_upload_group/MG_isetan_mistore_shinjuku3_2-total=934-20211216.zip | awk '{if($0~"success") print}')
+#IS_SUCCESS=$(echo $UPLOAD_RES | sed 's/,/\n/g' | grep "success" | sed 's/:/\n/g' | sed '1d' | sed 's/}//g')
+#
+#echo $IS_SUCCESS
 
 # CHECK BUILD LOG FOLDER AND FILE
 #if [ ! -d "$BASE_PATH/$AEM_LOG_FOLDER/s3_upload/" ]; then
