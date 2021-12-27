@@ -12,8 +12,6 @@ use(function () {
     };
 
     let result = {
-        packagename: 'diff_path',
-        total: '',
         paths: []
     };
 
@@ -59,9 +57,7 @@ use(function () {
             }
         }
     }
-
-    result.total = result.paths.length
-
+    
     return result;
 
     function getSearchResult(map) {
