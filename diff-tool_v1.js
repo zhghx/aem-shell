@@ -2,12 +2,13 @@ use(function () {
     'use strict';
 
     // 定数定義
-    // storePathは複数入力、フォマード：検索パス,店舗階層、タイプ：string
-    // maxは一つのパッケージに最大ページ数、タイプ：string
+    // diffDate:  変化するまでの時間
+    // onlyPage:  選択ページのみ
+    // searchPath:選択パス
     var constants = {
-        "diffDate":  properties.get("diffDate"),
-        "onlyPage": properties.get("onlyPage"),
-        "searchPath": properties.get("searchPath")
+        DIFF_DATE: properties.get("diffDate"),
+        ONLY_PAGE: properties.get("onlyPage"),
+        SEARCH_PATH: properties.get("searchPath")
     };
 
     let result = {
@@ -23,28 +24,30 @@ use(function () {
         '/etc/tags'
     ];
 
+    if (constants.SEARCH_PATH) {
+        searchtree = [constants.SEARCH_PATH]
+    }
+
     while (searchtree.length > 0) {
         let searchpath = searchtree.pop();
         try {
             let map = new Packages.java.util.HashMap();
             map.put("path", searchpath);
-
-            if(constants.onlyPage) {
-                map.put("type", "");
+            if (constants.ONLY_PAGE) {
+                map.put("type", "cq:Page");
             }
-
-            map.put("group.p.or","true");
+            map.put("group.p.or", "true");
             map.put("group.1_daterange.property", "jcr:content/jcr:lastModified");
-            map.put("group.1_daterange.lowerBound", "2021-02-21");
+            map.put("group.1_daterange.lowerBound", constants.DIFF_DATE);
             map.put("group.2_daterange.property", "jcr:content/jcr:created");
-            map.put("group.2_daterange.lowerBound", "2021-02-21");
+            map.put("group.2_daterange.lowerBound", constants.DIFF_DATE);
             let searchResult = getSearchResult(map).getHits().iterator();
             while (searchResult.hasNext()) {
                 result.paths.push(searchResult.next().getPath());
             }
         } catch (err) {
             let targetException = 'The query read or traversed more than 100000 nodes';
-            if(String(err.message).indexOf(targetException)) {
+            if (String(err.message).indexOf(targetException)) {
                 let rootNode = resolver.getResource(searchpath);
                 let childList = rootNode.getChildren();
                 for (let childIdx = 0; childIdx < childList.length; childIdx++) {
