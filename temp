@@ -1,0 +1,159 @@
+Done 9/29-10/5 目標：122
+https://trello.com/c/3ckNFerj  jsonコンポーネントリリース
+https://trello.com/c/SvT1lHux  Publishの死活監視適用｜本番リリース準備②
+
+Done 9/22-9/28 目標：81
+https://trello.com/c/zbXmmP0a  コンポーネントを使うか確認方法をコンフルに記載
+
+Done 9/15-9/21 目標：77
+https://trello.com/c/kQXNrQB6 【店HP】#1174：listコンポーネント最終公開日設定| 本番リリース
+https://trello.com/c/Aw6puLFQ 【店HP】#1356：新規富裕層向けjson（新宿）（9/29希望）| リリース準備
+
+Done 9/8-9/14 目標：96
+https://trello.com/c/VA1O3ptj  【9/8リリース】【店HP】#1188：謎の下位層ページ削除（急がない）｜リリース作業
+https://trello.com/c/DIS2UEc1  【meeco】（相談）#6：コンポーネント追加（9/22希望）｜調査・仕様決定
+https://trello.com/c/KRbdqbFS  OSGi設定のjson.maximumresults を 2000 から 3000へ変更｜本番リリース
+https://trello.com/c/W4qGJso5  AEM6.3モジュール →AEM6.5テンプレート改修後再テスト｜静的テンプレート
+https://trello.com/c/vVhqrvpL  9/15 【店HP】#1351：新規富裕層向けページ用json（京都）（9/22希望）｜RSS本番リリース準備
+https://trello.com/c/mngAIs4I  6.5開発環境impress動的テンプレート動かない｜調査
+https://trello.com/c/wZdhNDRh  【店HP】#1354：新規RSS 2件（新宿、日本橋）（9/29）｜リリース準備
+
+Done9/1-9/7 目標：110
+https://trello.com/c/TiEbRb1v  AEM6.3モジュール →AEM6.5テンプレート改修・調査｜静的テンプレート
+https://trello.com/c/hdIfqv0B  AEM6.3モジュール →AEM6.5へ投入して動作確認｜動的テンプレート
+
+Done8/25-8/31 目標：132
+https://trello.com/c/GYj3RQqR  【定期的リリース】RSS出力順
+https://trello.com/c/1PH7aEES  AEM6.3モジュール →AEM6.5へ投入して動作確認｜静的テンプレート
+https://trello.com/c/JaGmpluu  【バージョンアップ調査】静的テンプレート一つページを作れない
+
+Done8/18-8/24 目標：109
+https://trello.com/c/x6pkr8OJ  【meeco】#1：コンポーネント削除できない｜本番リリース
+https://trello.com/c/4DbnuGlR  コアコンポーネントバージョン変更、動作確認
+https://trello.com/c/xWQ7PqdQ  【店HP】（調査）#1328：ページからコンポーネントを削除できない（日本橋）｜原因調査
+https://trello.com/c/TrM8SMH3  バッファ：検索用コンポーネントの質問
+
+Done 8/11～8/17 目標：80
+https://trello.com/c/4vPCv3WC  lachicコンポーネント改修に伴うeclipse環境設定
+https://trello.com/c/MVxpdxsK  【本番リリース】【店HP】#1329：新規RSS 27件（基幹3店）（8/18希望）
+https://trello.com/c/nTyaK1y1  【本番リリース】[コンポーネント作成]SFCCカテゴリーTOPにあるEVENT欄に、 AEMイベント詳細とAEMショップニュース詳細をRSSタグで収集掲出する。
+https://trello.com/c/665Vyxc4  【meeco】（調査）#1：コンポーネント削除できない｜Adobeからの返信後対応
+
+Done 8/4~8/10 目標：68
+https://trello.com/c/DBZ5pRCu 【店HP】（調査）#1328：ページからコンポーネントを削除できない（日本橋）｜本番インストール
+https://trello.com/c/VMgvPqA0  首都圏5店舗ピックアップJSON出力コンポーネント｜リリース
+https://trello.com/c/Yz8PFnzU  【meeco】（テンプレート改修）#3：Pagenation Atricle List を使いたい（8月上旬）
+https://trello.com/c/AS12VL4h 【コンポーネント改修】shopnewsタグ除外
+https://trello.com/c/P7wM0JBF  [コンポーネント作成]SFCCカテゴリーTOPにあるEVENT欄に、 AEMイベント詳細とAEMショップニュース詳細をRSSタグで収集掲出する。
+https://trello.com/c/7ng2bstO  4/17_Author修正後シェル適応（早朝本番Author障害事後対応）｜STGリリース、本番リリース（申請含む）
+https://trello.com/c/gsjrXKLF  【meeco】（調査）#1：コンポーネント削除できない｜調査
+
+Done 7/28-8/3 目標：77
+https://trello.com/c/g69PdhC3　【店HP】（調査）#1318：編集画面でコンポーネント一覧が出ない（7月中）｜リリース
+https://trello.com/c/XDJJAoRU　首都圏5店舗ピックアップJSON出力コンポーネント｜作成②
+https://trello.com/c/1zFtQczu　　【店HP】（調査）#1328：ページからコンポーネントを削除できない（日本橋）｜調査
+https://trello.com/c/UZIgNnlj　　首都圏5店舗ピックアップJSON出力コンポーネント｜リリースと改修
+https://trello.com/c/Vch9vMmE  【STG環境】コンポーネントを使っているページがない時のやり方確認
+
+Done7/21-7/27 目標：50
+https://trello.com/c/luFnFlBM  新規グループ1件追加｜リリース
+https://trello.com/c/PGiy9ei1  動的テンプレート一覧整形
+https://trello.com/c/qFjjELG4  【店HP】（調査）#1318：編集画面でコンポーネント一覧が出ない（7月中）｜調査
+
+Done 7/14-7/20目標：76
+https://trello.com/c/GzdMYVI1  動的テンプレート一覧抽出
+
+Done7/7-7/13 目標：76
+https://trello.com/c/C9cB0vk6  【STG環境での検証】【HDS】Dispacherのリダイレクトを元に戻す：本番リリース21年7月末まで
+
+Done 6/30-7/6 目標：70
+https://trello.com/c/EsR9EOXT  首都圏5店舗ピックアップJSON出力コンポーネント｜作成①
+https://trello.com/c/B1tF2H7D  テンプレート・ワークフロー精査
+https://trello.com/c/OY80SHFQ  コンポーネント(koala以外)精査_続き
+https://trello.com/c/OY80SHFQ  コンポーネント(koala以外)精査_続き
+
+Done 6/23~29 目標:63
+https://trello.com/c/Iiu9lA4t  コンテンツ移行方法｜検証
+https://trello.com/c/gUaIhSce  【本番リリース】Facebook広告認証ファイル設置
+
+Done 6/16~22 目標：53
+https://trello.com/c/Bg7JCHuj  コンポーネント(koala以外)精査
+
+Done 6/9~6/15 目標59
+-----
+
+Done 6/2~6/8 目標62
+https://trello.com/c/8HsuM1qj  【法人HP】#5：ViewConditionコンポーネントの調査
+https://trello.com/c/6VC8efb9  リリース方法の検討
+https://trello.com/c/rqKJns0c  【テスト仕様書】コンポーネントでテスト仕様書を試作
+
+Done 5/26~6/1 目標72
+https://trello.com/c/jx5pnk1G  6/2(水)定期リリース用の手順読み合わせ
+
+Done 5/19~25 目標73
+https://trello.com/c/Gye4wrFc  【店HP】#1266：小型店ニュースRSS1件（静岡）（5/19希望）｜リリース作業
+
+Done5/12~18：目標75
+https://trello.com/c/g1LV5Xuh   【本番リリース】【店HP】#1261：RSS1件（新宿）（5/12）
+
+Done5/5-5/11 目標：66
+---
+
+Done4/28-5/4 目標：48
+---
+
+Done4/21-4/27 目標：66
+---
+
+Done4/14-4/20 目標：63
+https://trello.com/c/XAKWo18g  定期的リリースの本番作業完了報告
+
+Done4/7-4/13 目標：58
+---
+
+Done3/31-4/6 目標：56
+https://trello.com/c/NqGRCGLk  ConditionArticleListコンポーネントの再リリース
+
+Done3/24-3/30 目標：71
+https://trello.com/c/FFV34aJj  freelistコンポーネント改修_本番リリース
+https://trello.com/c/n5pN9M7a  ConditionArticleListコンポーネントソース確認(Publish)
+
+Done3/17-3/23 目標：50
+https://trello.com/c/XTEvs3Nn  AEM6.5コンテンツ移行対象の絞り方
+https://trello.com/c/2vqhXx2G  【資料共有・レビュー】【スキトラ後の実践】アプリケーション改修【コンポーネント】AEM6.3
+https://trello.com/c/ky9uT8F8  freelistコンポーネント改修_開発環境検証
+https://trello.com/c/4YSmyxpe  freelistコンポーネント改修に伴う影響確認
+https://trello.com/c/uY0pXGcq  freelistコンポーネント改修_STGリリース
+https://trello.com/c/xk1kxLBI  ＜TOPページ改修＞パッケージ作成・STGリリース
+
+Done3/10-3/16 目標：66
+https://trello.com/c/sT2Kt5pq  【スキトラ後の実践】アプリケーション改修【コンポーネント】AEM6.3
+
+Done3/3-3/9 目標：75
+---
+
+Done2/24-3/2 目標：68
+---
+
+Done2/17-2/23 目標：78
+---
+
+Done2/10-2/16 目標：66
+---
+
+Done2/3-2/9 目標：98
+---
+
+Done1/27-2/2 目標：73
+---
+
+Done1/20-1/26 目標：80
+---
+
+Done1/6-1/12 目標：60
+https://trello.com/c/70baifi8  AEMデフォルト（「基本」「標準」「一般」コンポーネント）の質問
+
+Done1/13-1/19 目標：69
+
+
+
