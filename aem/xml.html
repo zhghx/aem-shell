@@ -1,0 +1,15 @@
+<sly data-sly-use.redirect="header.js"></sly><sly data-sly-use.packages="query.js"></sly><?xml version="1.0" encoding="UTF-8"?></sly>
+<rss version="2.0">
+    <test-log>${packages.testLog}</test-log>
+    <channel data-sly-list.items="${packages.content}">
+        <item>
+            <title>${items.packagename}</title>
+            <p>total=${items.total}</p>
+            <description>
+                <sly data-sly-list.pathitems="${items.paths}">
+                    <filter root="${pathitems}"/>
+                </sly>
+            </description>
+        </item>
+    </channel>
+</rss>

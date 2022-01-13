@@ -1,0 +1,6 @@
+XML_URL=http://127.0.0.1:4502/content/ims-manage/createpackage.xml
+AEM_USER=admin
+AEM_PASSWORD=vxpj@dm1n
+AEM_IP=127.0.0.1
+AEM_PORT=4502
+AWS_S3_PATH=s3://vx-tokyo/tmp/tei_work/MG
