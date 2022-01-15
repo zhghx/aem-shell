@@ -10,18 +10,19 @@
 #
 ### END DESCRIPTION
 
-# xml data sources
-readonly XML_URL=http://54.92.43.67:7771/res.xml
-
-# aem server info for (upload, build, download)
-readonly USER63="admin"
-readonly PASSWORD63="adminadmin"
-readonly IP63="54.92.43.67"
-readonly PORT63=7769
-# aws s3
-readonly AWS_S3_PATH="s3://oss-zhghx"
+## xml data sources
+#readonly XML_URL=http://54.92.43.67:7771/res.xml
+#
+## aem server info for (upload, build, download)
+#readonly USER63="admin"
+#readonly PASSWORD63="adminadmin"
+#readonly IP63="54.92.43.67"
+#readonly PORT63=7769
+## aws s3
+#readonly AWS_S3_PATH="s3://oss-zhghx"
 
 # SYSTEM CONFIG
+readonly CONFIG_INI=config.ini
 readonly TEMP_FILE_ALL=temp_all.xml
 readonly TEMP_FILE_ITEM=temp_item.xml
 readonly ALL_PACKAGE_IFNO_XML=all_package.xml
@@ -31,13 +32,50 @@ readonly AEM_ZIP_FOLDER=pre_build_zip
 readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download_build_done_zip
 readonly GROUP_NAME=shell_upload_group
-readonly PACKAGE_VERSION=$(date +%Y%m%d)
 
 # SCRIPT STORAGE DIRECTORY
 BASE_PATH=$(
   cd $(dirname $0)
   pwd
 )
+
+# CHECK CONFIG
+if [ ! -f "$BASE_PATH/$CONFIG_INI" ]; then
+  echo 'Error: [config.ini] is not find.' >&2
+  exit 1
+fi
+if [ ! -s "$BASE_PATH/$CONFIG_INI" ]; then
+  echo 'Error: [config.ini] is empty.' >&2
+  exit 1
+fi
+
+# xml data sources
+readonly XML_URL=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"XML_URL") print}' | awk -F '=' '{print $2}')
+# aem server info for (upload, build, download)
+readonly USER63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_USER") print}' | awk -F '=' '{print $2}')
+readonly PASSWORD63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") print}' | awk -F '=' '{print $2}')
+readonly IP63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
+readonly PORT63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
+readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
+readonly PACKAGE_VERSION=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"PACKAGE_VERSION") print}' | awk -F '=' '{print $2}')
+
+# CHECK CONFIG
+if [[ $XML_URL == "" ]]; then
+  echo 'Error: [config.ini] XML_URL is not find.' >&2
+  exit 1
+fi
+if [[ $USER63 == "" ]]; then
+  echo 'Error: [config.ini] USER63 is not find.' >&2
+  exit 1
+fi
+if [[ $IP63 == "" ]]; then
+  echo 'Error: [config.ini] IP63 is not find.' >&2
+  exit 1
+fi
+if [[ $PORT63 == "" ]]; then
+  echo 'Error: [config.ini] PORT63 is not find.' >&2
+  exit 1
+fi
 
 # CHECK COMMAND
 if [ ! -x "$(command -v curl)" ]; then
@@ -306,23 +344,12 @@ function downloadPackage() {
         echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
         echo "[*]DOWNLOAD ERROR: [$packageUrl]"
       fi
-      continue
-    fi
     # FILE EXIST
-    actualSize=$(ls -l $BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName | awk -F ' ' '{print $5}')
-    remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
-    if [[ $actualSize == $remoteSize ]]; then
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packageUrl") != "" ]]; then
-        continue
-      fi
-      echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
-      echo "[*]DOWNLOAD SUCCESS: [$packageUrl]"
     else
-      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log" | grep "$packageUrl") != "" ]]; then
-        continue
+      if [[ $(cat "$BASE_PATH/$AEM_LOG_FOLDER/download/success.log" | grep "$packageUrl") == "" ]]; then
+        echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/success.log"
+        echo "[*]DOWNLOAD SUCCESS: [$packageUrl]"
       fi
-      echo $packageUrl >>"$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
-      echo "[*]DOWNLOAD ERROR: [$packageUrl]"
     fi
   done
   echo ""
@@ -366,9 +393,8 @@ function reDownloadPackage() {
     echo "[*]Start Re-Download: [$line]"
     curl -u ${user}:${password} $line -o "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName"
     echo -e "[*]Download Re-Complete !\n"
-    actualSize=$(ls -l "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" | awk -F ' ' '{print $5}')
-    remoteSize=$(xmllint --xpath "//package[downloadName='$downloadZipName']/size/text()" $BASE_PATH/$ALL_PACKAGE_IFNO_XML)
-    if [[ $actualSize == $remoteSize ]]; then
+    # FILE EXIST
+    if [[ -f "$BASE_PATH/$AEM_DOWNLOAD_FOLDER/$downloadZipName" ]]; then
       # DELETE ERROR LOG
       FORMAT_LINE=$(echo "$line" | sed 's#/#\\\/#g')
       sed -i "/$FORMAT_LINE/d" "$BASE_PATH/$AEM_LOG_FOLDER/download/error.log"
@@ -501,6 +527,8 @@ function reUploadToAwsS3() {
 #######################################
 # GET XML FILE
 curl -s -u $USER63:$PASSWORD63 $XML_URL >$BASE_PATH/$TEMP_FILE_ALL
+# XML FILE UPLOAD S3
+aws s3 cp "$BASE_PATH/$TEMP_FILE_ALL" "$AWS_S3_PATH/"
 
 # CHECK ZIP FOLDER
 if [ -d "$BASE_PATH/$AEM_ZIP_FOLDER" ]; then
