@@ -14,9 +14,9 @@
 #
 ### END DESCRIPTION
 
-#AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
-
 # aws-cli PATH; * crontab not find aws *
+
+# AWS_CLI_PATH=/System/Volumes/Data/opt/homebrew/bin/
 # export PATH=$AWS_CLI_PATH:$PATH
 
 # SYSTEM CONFIG
@@ -30,7 +30,6 @@ readonly AEM_ZIP_FOLDER=pre_build_zip
 readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download_s3_to_65_zip
 readonly GROUP_NAME=shell_upload_group
-readonly PACKAGE_VERSION=$(date +%Y%m%d)
 readonly CONVERT_LOCK=convert.lock
 
 # SCRIPT STORAGE DIRECTORY
@@ -68,6 +67,7 @@ readonly PASSWORD65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") p
 readonly IP65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
 readonly PORT65=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
 readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
+readonly PACKAGE_VERSION=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"PACKAGE_VERSION") print}' | awk -F '=' '{print $2}')
 
 # CHECK CONFIG
 if [[ $XML_URL == "" ]]; then

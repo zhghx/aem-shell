@@ -32,7 +32,6 @@ readonly AEM_ZIP_FOLDER=pre_build_zip
 readonly AEM_LOG_FOLDER=logs
 readonly AEM_DOWNLOAD_FOLDER=download_build_done_zip
 readonly GROUP_NAME=shell_upload_group
-readonly PACKAGE_VERSION=$(date +%Y%m%d)
 
 # SCRIPT STORAGE DIRECTORY
 BASE_PATH=$(
@@ -58,6 +57,7 @@ readonly PASSWORD63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PASSWORD") p
 readonly IP63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_IP") print}' | awk -F '=' '{print $2}')
 readonly PORT63=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AEM_PORT") print}' | awk -F '=' '{print $2}')
 readonly AWS_S3_PATH=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"AWS_S3_PATH") print}' | awk -F '=' '{print $2}')
+readonly PACKAGE_VERSION=$(cat $BASE_PATH/$CONFIG_INI | awk '{if($0~"PACKAGE_VERSION") print}' | awk -F '=' '{print $2}')
 
 # CHECK CONFIG
 if [[ $XML_URL == "" ]]; then
