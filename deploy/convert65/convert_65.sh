@@ -11,7 +11,8 @@
 # crontab:
 # crontab -e, crontab -l
 # -> */1 * * * * bash /Users/xxx/CODE/aem-custom/shell/convert_65.sh >> /Users/xxx/CODE/aem-custom/shell/crontab.log 2>&1
-#
+# flock
+# -> */1 * * * * flock -xn /home/ec2-user/aem-shell/aem-move-65-shell-content/convert65/lock.lock -c "bash /home/ec2-user/aem-shell/aem-move-65-shell-content/convert65/convert_65.sh >> /home/ec2-user/aem-shell/aem-move-65-shell-content/convert65/crontab.log 2>&1"
 ### END DESCRIPTION
 
 # aws-cli PATH; * crontab not find aws *
